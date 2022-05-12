@@ -38,3 +38,9 @@ class Dummy83Test(unittest.TestCase):
     def test_11(self):
         self.assertTrue(True)
 
+    def test_12(self):
+        self.assertTrue(True)
+
+    def test_13(self):
+        self.assertTrue(True)
+

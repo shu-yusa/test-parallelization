@@ -1,18 +1,32 @@
 import heapq
 import os
-import unittest
 from collections import namedtuple
 from concurrent.futures import ProcessPoolExecutor
 from typing import List, Optional
-from unittest import TestSuite, TextTestRunner
+from unittest import TestLoader, TestSuite, TextTestRunner
 
 TestGroup = namedtuple("TestGroup", "num_classes num_cases classes")
 
 
 def split_test_classes(num_groups: int, test_suites: List[TestSuite]) -> List[TestGroup]:
-    # Sort test suites by descending order of the included test cases
+    """
+    Split the given test suites (test classes) into the given number of groups in a way
+    each group contains as same number of test cases as possible.
+    :param num_groups:
+    :param test_suites:
+    :return:
+    """
+    if len(test_suites) <= num_groups:
+        # If the number of test classes is lower than the number of test groups,
+        # let each group contain one test class.
+        return [
+            TestGroup(1, test_suite.countTestCases(), [test_suite])
+            for test_suite in test_suites
+        ]
+
+    # Sort test suites by descending order of the included test cases.
     test_suites.sort(key=lambda x: x.countTestCases(), reverse=True)
-    # The second element is used to determine the order when group sizes are equal for multiple groups
+    # The second element is used to determine the order when group sizes are equal for multiple groups.
     heap = [(0, 0, []) for _ in range(num_groups)]
     for n, test_suite in enumerate(test_suites):
         group_size, _, test_group = heapq.heappop(heap)
@@ -28,9 +42,10 @@ def run_grouped_tests(test_group: TestGroup) -> bool:
 
 
 def run_all_tests(num_groups: int, test_group_indices: Optional[List[int]]):
-    test_classes: List[TestSuite] = list(unittest.TestLoader().discover("tests"))
+    test_classes: List[TestSuite] = list(TestLoader().discover("tests"))
     test_groups = split_test_classes(num_groups, test_classes)
     if test_group_indices:
+        # Pick up test groups to run by given indices.
         test_groups = [
             test_groups[idx] for idx in test_group_indices
             if idx < len(test_groups)

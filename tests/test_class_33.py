@@ -32,3 +32,6 @@ class Dummy33Test(unittest.TestCase):
     def test_9(self):
         self.assertTrue(True)
 
+    def test_10(self):
+        self.assertTrue(True)
+

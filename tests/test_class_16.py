@@ -38,21 +38,3 @@ class Dummy16Test(unittest.TestCase):
     def test_11(self):
         self.assertTrue(True)
 
-    def test_12(self):
-        self.assertTrue(True)
-
-    def test_13(self):
-        self.assertTrue(True)
-
-    def test_14(self):
-        self.assertTrue(True)
-
-    def test_15(self):
-        self.assertTrue(True)
-
-    def test_16(self):
-        self.assertTrue(True)
-
-    def test_17(self):
-        self.assertTrue(True)
-

@@ -23,21 +23,3 @@ class Dummy94Test(unittest.TestCase):
     def test_6(self):
         self.assertTrue(True)
 
-    def test_7(self):
-        self.assertTrue(True)
-
-    def test_8(self):
-        self.assertTrue(True)
-
-    def test_9(self):
-        self.assertTrue(True)
-
-    def test_10(self):
-        self.assertTrue(True)
-
-    def test_11(self):
-        self.assertTrue(True)
-
-    def test_12(self):
-        self.assertTrue(True)
-
