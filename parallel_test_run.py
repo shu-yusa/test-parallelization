@@ -1,9 +1,10 @@
 import heapq
+import os
 import unittest
-from unittest import TestSuite, TextTestRunner
 from collections import namedtuple
 from concurrent.futures import ProcessPoolExecutor
-from typing import List
+from typing import List, Optional
+from unittest import TestSuite, TextTestRunner
 
 TestGroup = namedtuple("TestGroup", "num_classes num_cases classes")
 
@@ -26,11 +27,16 @@ def run_grouped_tests(test_group: TestGroup) -> bool:
     return result.wasSuccessful()
 
 
-def run_all_tests():
-    num_groups = 4
-
+def run_all_tests(num_groups: int, test_group_indices: Optional[List[int]]):
     test_classes: List[TestSuite] = list(unittest.TestLoader().discover("tests"))
     test_groups = split_test_classes(num_groups, test_classes)
+    if test_group_indices:
+        test_groups = [
+            test_groups[idx] for idx in test_group_indices
+            if idx < len(test_groups)
+        ]
+    if not test_groups:
+        return
 
     print("[Grouped Tests]")
     for idx, test_group in enumerate(test_groups):
@@ -41,8 +47,13 @@ def run_all_tests():
         print("[Test Results]")
         for idx, result in enumerate(results):
             print("Group-{}: {}".format(idx, ['NG', 'OK'][result]))
-        return results
 
 
 if __name__ == '__main__':
-    run_all_tests()
+    default_parallelization_factor = 4
+    test_group_indices = os.environ.get("TEST_GROUP_INDICES")
+    if test_group_indices:
+        test_group_indices = [int(idx) for idx in test_group_indices.split(",")]
+
+    num_parallelization = int(os.environ.get("NUM_PARALLELIZATION", default_parallelization_factor))
+    run_all_tests(num_parallelization, test_group_indices)

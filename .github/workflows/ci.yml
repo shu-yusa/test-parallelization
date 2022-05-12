@@ -1,0 +1,24 @@
+name: ci
+on:
+  push
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        params:
+          - {test_group_indices: "0,1"}
+          - {test_group_indices: "2,3"}
+    env:
+      NUM_PARALLELIZATION: 4  # 2 jobs x 2 processes
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9.9'
+      - name: Run tests
+        env:
+          TEST_GROUP_INDICES: ${{ matrix.params.test_group_indices }}
+        run: |
+          python parallel_test_run.py
