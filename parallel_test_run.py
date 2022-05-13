@@ -8,9 +8,9 @@ from unittest import TestLoader, TestSuite, TextTestRunner
 TestGroup = namedtuple("TestGroup", "num_classes num_cases classes")
 
 
-def split_test_classes(num_groups: int, test_suites: List[TestSuite]) -> List[TestGroup]:
+def split_test_classes(test_suites: List[TestSuite], num_groups: int) -> List[TestGroup]:
     """
-    Split the given test suites (test classes) into the given number of groups in a way
+    Split given test suites (test classes) into the given number of groups in a way that
     each group contains as same number of test cases as possible.
     :param num_groups:
     :param test_suites:
@@ -35,15 +35,14 @@ def split_test_classes(num_groups: int, test_suites: List[TestSuite]) -> List[Te
     return [TestGroup(len(test_group), group_size, test_group) for group_size, _, test_group in heap]
 
 
-def run_grouped_tests(test_group: TestGroup) -> bool:
+def run_test_group(test_group: TestGroup) -> bool:
     suite = TestSuite(test_group.classes)
     result = TextTestRunner().run(suite)
     return result.wasSuccessful()
 
 
-def run_all_tests(num_groups: int, test_group_indices: Optional[List[int]]):
-    test_classes: List[TestSuite] = list(TestLoader().discover("tests"))
-    test_groups = split_test_classes(num_groups, test_classes)
+def run_tests(test_suites: List[TestSuite], num_groups: int, test_group_indices: Optional[List[int]]):
+    test_groups = split_test_classes(test_suites, num_groups)
     if test_group_indices:
         # Pick up test groups to run by given indices.
         test_groups = [
@@ -58,7 +57,7 @@ def run_all_tests(num_groups: int, test_group_indices: Optional[List[int]]):
         print("Group-{}: {} classes, {} cases".format(idx, test_group.num_classes, test_group.num_cases))
 
     with ProcessPoolExecutor(max_workers=len(test_groups)) as executor:
-        results = list(executor.map(run_grouped_tests, test_groups))
+        results = list(executor.map(run_test_group, test_groups))
         print("[Test Results]")
         for idx, result in enumerate(results):
             print("Group-{}: {}".format(idx, ['NG', 'OK'][result]))
@@ -71,4 +70,5 @@ if __name__ == '__main__':
         test_group_indices = [int(idx) for idx in test_group_indices.split(",")]
 
     num_parallelization = int(os.environ.get("NUM_PARALLELIZATION", default_parallelization_factor))
-    run_all_tests(num_parallelization, test_group_indices)
+    test_classes: List[TestSuite] = list(TestLoader().discover("tests"))
+    run_tests(test_classes, num_parallelization, test_group_indices)
