@@ -1,7 +1,7 @@
 # Python test parallelization sample
 This sample code demonstrates how one can parallelize test execution in Python.
 Two levels of parallelizations are made in this sample. That is, parallelization in a computing instance by multiprocessing, and parallelization with multiple computing instances (GitHub Actions’ Job).
-To balance the workload in each process, test classes are split into groups so that the number of test cases in each group becomes as equal as possible.
+To balance the workload among processes, test classes are split into groups so that the number of test cases in each group becomes as equal as possible.
 
 ## Test execution
 To run tests, run the following command (confimed with Python3.9)
