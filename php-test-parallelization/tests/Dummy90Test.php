@@ -40,16 +40,4 @@ class Dummy90Test extends TestCase
         $this->assertTrue(true);
     }
 
-    public function test6()
-    {
-        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
-    }
-
-    public function test7()
-    {
-        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
-    }
-
 }

@@ -7,7 +7,7 @@ class Dummy6Test extends TestCase
     public function test0()
     {
         password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
+        $this->assertTrue(false);
     }
 
     public function test1()
@@ -35,48 +35,6 @@ class Dummy6Test extends TestCase
     }
 
     public function test5()
-    {
-        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
-    }
-
-    public function test6()
-    {
-        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
-    }
-
-    public function test7()
-    {
-        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
-    }
-
-    public function test8()
-    {
-        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
-    }
-
-    public function test9()
-    {
-        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
-    }
-
-    public function test10()
-    {
-        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
-    }
-
-    public function test11()
-    {
-        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
-        $this->assertTrue(true);
-    }
-
-    public function test12()
     {
         password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         $this->assertTrue(true);

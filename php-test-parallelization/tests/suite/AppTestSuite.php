@@ -74,7 +74,7 @@ class ParallelTestRunner
         return $result->wasSuccessful();
     }
 
-    public function runTests(array $test_suites, int $num_groups, array $test_group_indices=null): void
+    public function runTests(array $test_suites, int $num_groups, array $test_group_indices=null): bool
     {
         $test_groups = $this->splitTestClasses($test_suites, $num_groups);
         if ($test_group_indices) {
@@ -85,7 +85,7 @@ class ParallelTestRunner
                 }
             }
             if (empty($partial_group)) {
-                return;
+                return true;
             }
         }
 
@@ -93,43 +93,40 @@ class ParallelTestRunner
         foreach ($test_groups as $i => $test_group) {
             print(sprintf("Group-%d: %d classes, %d cases\n", $i, $test_group->numClasses, $test_group->numCases));
         }
-        print("\n");
         ob_flush();
-        $pids = [];
-        foreach ($test_groups as $i => $test_group) {
-            $mypid = getmypid();
-            # print("Forking ...@" . $mypid . "\n");
-//             ob_flush();
+        $childs = [];
+        foreach ($test_groups as $test_group) {
             $pid = pcntl_fork();
-            # print("forked pid=" . $pid . ", i=" . $i . "\n");
 
-            if ($pid === -1) {
-                exit("Error forking...\n");
-            } else if ($pid === 0) {
-                $mypid = getmypid();
-                # printf("Child this_id:%d pid:%d\n\n", $mypid, $pid);
-                // sleep(1);
-                $this->runTestGroup($test_group);
-                ob_flush();
-                # die();
-                exit(0);
+            if ($pid === -1)
+                die("Error forking...\n");
+
+            if ($pid) {
+                $childs[] = $pid;
             } else {
-                $pids[] = $pid;
-                $mypid = getmypid();
-                # printf("Parent this_id:%d pid:%d\n\n", $mypid, $pid);
+                // Child process
+                $result = $this->runTestGroup($test_group);
+                ob_flush();
+                exit($result ? 0 : 1);
             }
         }
-        pcntl_waitpid(0, $status);
-//         print("Status: " . $status . "\n");
-
-        // echo "Do stuff after all parallel execution is complete.\n";
-        exit(TestRunner::SUCCESS_EXIT);
+        $output = "\n[Test Results]\n";
+        $sign = ["OK", "NG"];
+        $is_successful = true;
+        foreach ($childs as $key => $pid) {
+            pcntl_waitpid($pid, $status);
+            $status = pcntl_wexitstatus($status);
+            $is_successful &= $status === 0;
+            $output .= "Group-{$key}: {$sign[$status]}\n";
+        }
+        print($output);
+        return $is_successful;
     }
 }
 
 class AppTestSuite extends TestCase
 {
-    public function test(): void
+    public function testSuite(): void
     {
         $default_parallelization_factor = 3;
         $test_group_indices = getenv("TEST_GROUP_INDICES");
@@ -144,7 +141,7 @@ class AppTestSuite extends TestCase
             $suites[] = $suite;
         }
         $runner = new ParallelTestRunner();
-        $runner->runTests($suites, $num_parallelization);
-        $this->assertTrue(true);
+        $is_successful = $runner->runTests($suites, $num_parallelization);
+        $this->assertTrue($is_successful, message: "Test suite was not perfect");
     }
 }

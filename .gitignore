@@ -4,3 +4,4 @@ __pycache__
 *~
 .python-version
 php-test-parallelization/vendor
+php-test-parallelization/.phpunit.result.cache

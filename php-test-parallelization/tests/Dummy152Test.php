@@ -22,4 +22,28 @@ class Dummy152Test extends TestCase
         $this->assertTrue(true);
     }
 
+    public function test3()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test4()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test5()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test6()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
 }
