@@ -2,7 +2,7 @@ name: ci
 on:
   push
 jobs:
-  run-tests:
+  run-python-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,3 +22,34 @@ jobs:
           TEST_GROUP_INDICES: ${{ matrix.params.test_group_indices }}
         run: |
           python parallel_test_run.py
+  run-php-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        params:
+          - {test_group_indices: "0,1"}
+          - {test_group_indices: "2,3"}
+    env:
+      NUM_PARALLELIZATION: 4  # 2 jobs x 2 processes
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup php 8.1
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+      - uses: php-actions/composer@v6
+        with:
+          command: |
+            cd php-test-parallelization
+            composer install
+      - name: Run tests
+        env:
+          TEST_GROUP_INDICES: ${{ matrix.params.test_group_indices }}
+        run: |
+          cd php-test-parallelization
+          ./vendor/bin/phpunit
