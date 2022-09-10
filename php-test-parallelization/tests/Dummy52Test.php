@@ -6,25 +6,25 @@ class Dummy52Test extends TestCase
 {
     public function test0()
     {
-        sleep(0);
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         $this->assertTrue(true);
     }
 
     public function test1()
     {
-        sleep(0);
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         $this->assertTrue(true);
     }
 
     public function test2()
     {
-        sleep(0);
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         $this->assertTrue(true);
     }
 
     public function test3()
     {
-        sleep(0);
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         $this->assertTrue(true);
     }
 

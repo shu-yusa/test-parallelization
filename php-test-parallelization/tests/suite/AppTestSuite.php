@@ -89,7 +89,7 @@ class ParallelTestRunner
             }
         }
 
-        print("\n[Grouped Tests]\n");
+        print("[Grouped Tests]\n");
         foreach ($test_groups as $i => $test_group) {
             print(sprintf("Group-%d: %d classes, %d cases\n", $i, $test_group->numClasses, $test_group->numCases));
         }
@@ -98,34 +98,31 @@ class ParallelTestRunner
         $pids = [];
         foreach ($test_groups as $i => $test_group) {
             $mypid = getmypid();
-            print("Forking ...@" . $mypid . "\n");
-            ob_flush();
+            # print("Forking ...@" . $mypid . "\n");
+//             ob_flush();
             $pid = pcntl_fork();
-            print("forked pid=" . $pid . ", i=" . $i . "\n");
+            # print("forked pid=" . $pid . ", i=" . $i . "\n");
 
             if ($pid === -1) {
                 exit("Error forking...\n");
             } else if ($pid === 0) {
                 $mypid = getmypid();
-                printf("Child this_id:%d pid:%d\n\n", $mypid, $pid);
-                sleep(1);
+                # printf("Child this_id:%d pid:%d\n\n", $mypid, $pid);
+                // sleep(1);
                 $this->runTestGroup($test_group);
-                print("EEEEE");
-                die();
+                ob_flush();
+                # die();
                 exit(0);
             } else {
                 $pids[] = $pid;
                 $mypid = getmypid();
-                printf("Parent this_id:%d pid:%d\n\n", $mypid, $pid);
+                # printf("Parent this_id:%d pid:%d\n\n", $mypid, $pid);
             }
         }
         pcntl_waitpid(0, $status);
-//        while(pcntl_waitpid(2, $status) !== -1) {
-//            print("Waiting..\n");
-//        }
-        print("Status: " . $status . "\n");
+//         print("Status: " . $status . "\n");
 
-        echo "Do stuff after all parallel execution is complete.\n";
+        // echo "Do stuff after all parallel execution is complete.\n";
         exit(TestRunner::SUCCESS_EXIT);
     }
 }
@@ -139,7 +136,7 @@ class AppTestSuite extends TestCase
         if ($test_group_indices) {
             $test_group_indices = array_map("intval", explode(",", $test_group_indices));
         }
-        $num_parallelization = getenv("NUM_PARALLELIZATION") ?? $default_parallelization_factor;
+        $num_parallelization = getenv("NUM_PARALLELIZATION") ?: $default_parallelization_factor;
         $suites = [];
         foreach (glob("./tests/*Test.php") as $file) {
             $suite = new TestSuite();
@@ -147,7 +144,7 @@ class AppTestSuite extends TestCase
             $suites[] = $suite;
         }
         $runner = new ParallelTestRunner();
-        $runner->runTests($suites, $default_parallelization_factor);
+        $runner->runTests($suites, $num_parallelization);
         $this->assertTrue(true);
     }
 }

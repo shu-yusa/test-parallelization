@@ -9,7 +9,7 @@ function create_dummy_test_files($directory, $num_classes, $max_test_cases_per_c
             $test_cases .= <<<END
     public function test{$j}()
     {
-        sleep(0);
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         \$this->assertTrue(true);
     }\n\n
 END;
@@ -32,4 +32,4 @@ END;
 
 }
 
-create_dummy_test_files("./tests", 100, 20);
+create_dummy_test_files("./tests", num_classes: 200, max_test_cases_per_class: 30);

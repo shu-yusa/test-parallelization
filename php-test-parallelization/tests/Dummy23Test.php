@@ -6,25 +6,91 @@ class Dummy23Test extends TestCase
 {
     public function test0()
     {
-        sleep(0);
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         $this->assertTrue(true);
     }
 
     public function test1()
     {
-        sleep(0);
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         $this->assertTrue(true);
     }
 
     public function test2()
     {
-        sleep(0);
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         $this->assertTrue(true);
     }
 
     public function test3()
     {
-        sleep(0);
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test4()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test5()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test6()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test7()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test8()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test9()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test10()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test11()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test12()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test13()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
+        $this->assertTrue(true);
+    }
+
+    public function test14()
+    {
+        password_hash("test", PASSWORD_DEFAULT, ["cost" => 6]);
         $this->assertTrue(true);
     }
 
