@@ -4,7 +4,7 @@ Two levels of parallelizations are made in this sample. That is, parallelization
 To balance the workload among processes, test classes are split into groups so that the number of test cases in each group becomes as equal as possible.
 
 ## Test execution
-To run tests, run the following command (confimed with Python3.9)
+To run tests, run the following command (confimed with Python3.10)
 ```bash
 python parallel_test_run.py
 ```
