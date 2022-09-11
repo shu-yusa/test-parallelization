@@ -10,6 +10,7 @@ jobs:
         working-directory: python
     strategy:
       matrix:
+        version: ['3.9.9', '3.10.6']
         params:
           - {test_group_indices: "0,1"}
           - {test_group_indices: "2,3"}
@@ -17,10 +18,10 @@ jobs:
       NUM_PARALLELIZATION: 4  # 2 jobs x 2 processes
     steps:
       - uses: actions/checkout@v2
-      - name: Setup python 3.10
+      - name: Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10.6'
+          python-version: ${{ matrix.version }}
       - name: Run tests
         env:
           TEST_GROUP_INDICES: ${{ matrix.params.test_group_indices }}
@@ -34,6 +35,7 @@ jobs:
         working-directory: php
     strategy:
       matrix:
+        version: ['8.0', '8.1']
         params:
           - {test_group_indices: "0,1"}
           - {test_group_indices: "2,3"}
@@ -41,15 +43,15 @@ jobs:
       NUM_PARALLELIZATION: 4  # 2 jobs x 2 processes
     steps:
       - uses: actions/checkout@v2
-      - name: Setup php 8.1
+      - name: Setup php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: ${{ matrix.version }}
       - name: Cache Composer dependencies
         uses: actions/cache@v2
         with:
           path: /tmp/composer-cache
-          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-${{ matrix.version }}-${{ hashFiles('**/composer.lock') }}
       - name: Install composer
         run: |
           php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
