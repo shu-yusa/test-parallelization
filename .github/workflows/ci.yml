@@ -10,7 +10,7 @@ jobs:
         working-directory: python
     strategy:
       matrix:
-        version: ['3.9.9', '3.10.6']
+        version: ['3.9', '3.10']
         params:
           - {test_group_indices: "0,1"}
           - {test_group_indices: "2,3"}
@@ -52,15 +52,9 @@ jobs:
         with:
           path: /tmp/composer-cache
           key: ${{ runner.os }}-${{ matrix.version }}-${{ hashFiles('**/composer.lock') }}
-      - name: Install composer
-        run: |
-          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-          php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-          php composer-setup.php
-          php -r "unlink('composer-setup.php');"
       - name: Install dependencies
         run: |
-          ./composer.phar install
+          composer install
       - name: Run tests
         env:
           TEST_GROUP_INDICES: ${{ matrix.params.test_group_indices }}
