@@ -33,6 +33,7 @@ class ParallelTestRunner
     private function splitTestClasses(array $test_suites, int $num_groups): array
     {
         if (count($test_suites) <= $num_groups) {
+            // In case the number of TestSuites are lower than the number of expected groups
             $test_groups = [];
             foreach ($test_suites as $test_suite) {
                 $test_groups[] = new TestGroup(1, $test_suite->count(), [$test_suite]);
@@ -40,6 +41,7 @@ class ParallelTestRunner
             return $test_groups;
         }
 
+        // Sort TestSuites by descending of the number of TestCases included
         usort($test_suites, function(TestSuite $a, TestSuite $b) {
             if ($b->count() < $a->count()) { return -1; }
             if ($a->count() === $b->count()) { return 0; }
@@ -49,6 +51,7 @@ class ParallelTestRunner
         for ($i = 0; $i < $num_groups; $i++) {
             $heap->insert([0, []]);
         }
+        // Fill groups in a greedy way
         foreach ($test_suites as $test_suite) {
             $test_group = $heap->extract();
             $test_group[1][] = $test_suite;
@@ -77,32 +80,35 @@ class ParallelTestRunner
     public function runTests(array $test_suites, int $num_groups, array $test_group_indices=null): bool
     {
         $test_groups = $this->splitTestClasses($test_suites, $num_groups);
+        // Pick up test suites to run by indices
+        $partial_groups = [];
         if ($test_group_indices) {
-            $partial_group = [];
             for ($i = 0; $i < count($test_group_indices); $i++) {
                 if ($i < count($test_groups)) {
-                    $partial_group[] = $test_groups[$i];
+                    $partial_groups[] = $test_groups[$i];
                 }
             }
-            if (empty($partial_group)) {
+            if (empty($partial_groups)) {
                 return true;
             }
+        } else {
+            $partial_groups = $test_groups;
         }
 
         print("[Grouped Tests]\n");
-        foreach ($test_groups as $i => $test_group) {
+        foreach ($partial_groups as $i => $test_group) {
             print(sprintf("Group-%d: %d classes, %d cases\n", $i, $test_group->numClasses, $test_group->numCases));
         }
         ob_flush();
-        $childs = [];
-        foreach ($test_groups as $test_group) {
+        $children = [];
+        foreach ($partial_groups as $test_group) {
             $pid = pcntl_fork();
-
             if ($pid === -1)
                 die("Error forking...\n");
 
             if ($pid) {
-                $childs[] = $pid;
+                // Parent process
+                $children[] = $pid;
             } else {
                 // Child process
                 $result = $this->runTestGroup($test_group);
@@ -111,16 +117,18 @@ class ParallelTestRunner
             }
         }
         $output = "\n[Test Results]\n";
-        $sign = ["OK", "NG"];
-        $is_successful = true;
-        foreach ($childs as $key => $pid) {
+        $was_all_successful = true;
+        // Wait for all child processes to finish
+        foreach ($children as $key => $pid) {
             pcntl_waitpid($pid, $status);
+            // Extract exit status of the child process
             $status = pcntl_wexitstatus($status);
-            $is_successful &= $status === 0;
-            $output .= "Group-{$key}: {$sign[$status]}\n";
+            $was_successful = $status === 0;
+            $was_all_successful &= $was_successful;
+            $output .= Sprintf("Group-%s: %s\n", $key, $was_successful ? "OK" : "NG");
         }
         print($output);
-        return $is_successful;
+        return $was_all_successful;
     }
 }
 
@@ -133,15 +141,18 @@ class AppTestSuite extends TestCase
         if ($test_group_indices) {
             $test_group_indices = array_map("intval", explode(",", $test_group_indices));
         }
+
         $num_parallelization = getenv("NUM_PARALLELIZATION") ?: $default_parallelization_factor;
+        // Create TestSuite objects
         $suites = [];
         foreach (glob("./tests/*Test.php") as $file) {
             $suite = new TestSuite();
             $suite->addTestFile($file);
             $suites[] = $suite;
         }
+
         $runner = new ParallelTestRunner();
-        $is_successful = $runner->runTests($suites, $num_parallelization);
-        $this->assertTrue($is_successful, message: "Test suite was not perfect");
+        $was_successful = $runner->runTests($suites, $num_parallelization, $test_group_indices);
+        $this->assertTrue($was_successful, message: "Test suite was not fully successful");
     }
 }
