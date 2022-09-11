@@ -137,8 +137,8 @@ class AppTestSuite extends TestCase
     public function testSuite(): void
     {
         $default_parallelization_factor = 3;
-        $test_group_indices = getenv("TEST_GROUP_INDICES");
-        if ($test_group_indices) {
+        $test_group_indices = null;
+        if (getenv("TEST_GROUP_INDICES")) {
             $test_group_indices = array_map("intval", explode(",", $test_group_indices));
         }
 
