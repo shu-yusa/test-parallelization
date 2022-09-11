@@ -2,6 +2,8 @@
 __pycache__
 *.sw[po]
 *~
+
 .python-version
+php-test-parallelization/.git*
 php-test-parallelization/vendor
 php-test-parallelization/.phpunit.result.cache

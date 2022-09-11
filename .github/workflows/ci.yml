@@ -24,6 +24,10 @@ jobs:
           python parallel_test_run.py
   run-php-tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: php-test-parallelization
     strategy:
       matrix:
         params:
@@ -42,14 +46,17 @@ jobs:
         with:
           path: /tmp/composer-cache
           key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
-      - uses: php-actions/composer@v6
-        with:
-          command: |
-            cd php-test-parallelization
-            composer install
+      - name: Install composer
+        run: |
+          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+          php composer-setup.php
+          php -r "unlink('composer-setup.php');"
+      - name: Install dependencies
+        run: |
+          ./composer.phar install
       - name: Run tests
         env:
           TEST_GROUP_INDICES: ${{ matrix.params.test_group_indices }}
         run: |
-          cd php-test-parallelization
-          ./vendor/bin/phpunit
+          ./vendor/bin/phpunit --do-not-cache-result
