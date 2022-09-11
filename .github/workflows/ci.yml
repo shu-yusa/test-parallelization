@@ -4,6 +4,10 @@ on:
 jobs:
   run-python-tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: python
     strategy:
       matrix:
         params:
@@ -27,7 +31,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: php-test-parallelization
+        working-directory: php
     strategy:
       matrix:
         params:
