@@ -68,7 +68,7 @@ class ParallelTestRunner
         return $test_groups;
     }
 
-    public function runTestGroup(TestGroup $testGroup): bool
+    private function runTestGroup(TestGroup $testGroup): bool
     {
         $suite = new TestSuite();
         $suite->setTests($testGroup->classes);
